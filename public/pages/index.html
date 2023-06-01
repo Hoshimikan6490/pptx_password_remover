@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>YouTube Downloader</title>
+</head>
+
+<style>
+    p {
+        font-size: 30px;
+    }
+
+    #line {
+        position: fixed;
+        /* 要素の位置を固定する */
+        bottom: 0;
+        /* 基準の位置を画面の一番下に指定する */
+        left: 0;
+        /* 基準の位置を画面の一番右に指定する */
+        margin: 5px;
+    }
+
+    header {
+        position: fixed;
+        top: 0;
+        left: auto;
+        background: rgba(255, 255, 255);
+        width: 98%;
+        height: 60px;
+        border: 3px solid #333333;
+        margin: auto;
+    }
+
+    font.title {
+        position: fixed;
+        top: 0;
+        left: 70px;
+        font-size: 40px;
+        margin: 15px;
+    }
+
+    li {
+        font-size: 40px;
+    }
+
+    img {
+        margin: 5px;
+    }
+
+    .btn {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 130px;
+        height: 20px;
+        margin: 20px;
+        margin-right: 30px;
+    }
+
+    .btn a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        background: #0099FF;
+        text-align: center;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50px;
+        box-shadow: 5px 5px 0px 0px #DEDEDE;
+    }
+
+    .btn a:hover {
+        background: #0099FF;
+        color: #FFFC00;
+        margin-left: 5px;
+        margin-top: 5px;
+        box-shadow: none;
+    }
+
+    input {
+        width: 300px;
+    }
+
+    .button_group {
+        display: flex;
+        justify-content: center;
+    }
+
+    .button_group a.button {
+        margin-left: 5px;
+        display: inline-block;
+        text-decoration: none;
+        background: #0099FF;
+        text-align: center;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50px;
+        box-shadow: 5px 5px 0px 0px #DEDEDE;
+        padding: 10px;
+    }
+
+    .button_group a:hover.button {
+        background: #0099FF;
+        color: #FFFC00;
+        box-shadow: none;
+    }
+
+    .button_group a.audio_button {
+        margin-left: 5px;
+        display: inline-block;
+        text-decoration: none;
+        background: #a400c5;
+        text-align: center;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50px;
+        box-shadow: 5px 5px 0px 0px #DEDEDE;
+        padding: 10px;
+    }
+
+    .button_group a:hover.audio_button {
+        background: #a400c5;
+        color: #FFFC00;
+        box-shadow: none;
+    }
+
+    .button_group a.hi_video_button {
+        margin-left: 5px;
+        display: inline-block;
+        text-decoration: none;
+        background: #aaaaaa;
+        text-align: center;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50px;
+        box-shadow: 5px 5px 0px 0px #DEDEDE;
+        padding: 10px;
+    }
+
+    .button_group a:hover.hi_video_button {
+        background: #aaaaaa;
+        /*color:#FFFC00;*/
+        box-shadow: none;
+    }
+
+    main {
+        background: #ffffff;
+        margin-top: 70px;
+    }
+
+    body {
+        display: flex;
+        flex-flow: column;
+    }
+
+    form {
+        text-align: center;
+    }
+</style>
+
+<body>
+    <header>
+        <img src="./images/logo.png" title="logo" width="50px" hight="50px" />
+        <font face="UD デジタル 教科書体 N-B" class="title">PPTX password remover</font>
+    </header>
+
+    <main>
+        <form>
+            <p>パスワードを削除したいファイルを選択してください。</p>
+            <div class="button_group">
+                <input id="file_pas" />
+                <a class="button" href="#" onclick="start()">▶️開始</a>
+            </div>
+        </form>
+        <br />
+    </main>
+</body>
+
+<script>
+    function start() {
+        let file_pas = document.getElementById("file_pas").value;
+        if (file_pas !== null) {
+            window.alert(
+                "処理を開始します。"
+            );
+            window.location.href =
+                `http://localhost:8000/files?file_pas=${file_pas}`;
+        } else if (url == "") {
+            window.alert("ファイルを選択してください。")
+        } else {
+            window.alert("ファイルパスの読み取り時に、エラーが発生しました。再度お試しください。");
+        }
+    }
+</script>
+
+</html>
