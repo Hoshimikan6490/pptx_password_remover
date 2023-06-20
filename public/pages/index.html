@@ -140,37 +140,13 @@
     </header>
 
     <main>
-        <form>
-            <p>パスワードを削除したいファイルを選択してください。</p>
-            <div class="button_group">
-                <button>ファイルを選択</button>
-                <input id="file_pas" type="file" />
-                <a class="button" href="#" onclick="start()">▶️開始</a>
-            </div>
+        <h1>パスワードを削除したいPPTXをアップロード</h1>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".pptx">
+            <button type="submit">送信</button>
         </form>
         <br />
     </main>
 </body>
-
-<script>
-    document.querySelector("button").addEventListener("click", () => {
-        document.querySelector("input").click();
-    });
-
-    function start() {
-        let file_pas = document.getElementById("file_pas").value;
-        if (file_pas !== null) {
-            window.alert(
-                "処理を開始します。"
-            );
-            window.location.href =
-                `http://localhost:8000/files?file_pas=${file_pas}`;
-        } else if (url == "") {
-            window.alert("ファイルを選択してください。")
-        } else {
-            window.alert("ファイルパスの読み取り時に、エラーが発生しました。再度お試しください。");
-        }
-    }
-</script>
 
 </html>
