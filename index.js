@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
+const fs = require("fs");
+const AdmZip = require("adm-zip");
 
 const app = express();
 const port = 8000;
@@ -23,9 +25,21 @@ app.get("/", (req, res) =>
 );
 
 app.post("/", upload.single("file"), function (req, res) {
-  res.send(req.file.originalname + "ファイルのアップロードが完了しました。\n処理を開始します…");
-  
-  
+  res.send(
+    req.file.originalname +
+      "ファイルのアップロードが完了しました。\n処理を開始します…"
+  );
+
+  fs.rename(
+    `public/uploads/${req.file.originalname}`,
+    `public/uploads/working.zip`,
+    (err) => {
+      if (err) throw err;
+    }
+  );
+
+  const zip = new AdmZip(path.join(__dirname, `public/uploads/working.zip`));
+  zip.extractAllTo(`public/uploads/editing`, true);
 });
 
 app.listen(port, function () {
