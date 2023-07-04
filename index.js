@@ -1,22 +1,18 @@
 const express = require("express");
 const path = require("path");
-const multer = require("multer");
+const fileUpload = require("express-fileupload");
 const fs = require("fs");
 const AdmZip = require("adm-zip");
 
 const app = express();
 const port = 8000;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
+app.use(
+  fileUpload({
+    defCharset: "utf8",
+    defParamCharset: "utf8",
+  })
+);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -45,14 +41,28 @@ function remove_p_modifyVerifier(xml) {
   }
 }
 
-app.post("/", upload.single("file"), function (req, res) {
+app.post("/", function (req, res) {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    res.status(400).send("No files were uploaded.");
+    return;
+  }
+
+  let file = req.files.file;
+  let uploadPath = __dirname + "/public/uploads/" + file.name;
+
+  file.mv(uploadPath, function (err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+  });
+
   res.send(
-    req.file.originalname +
+    file.name +
       "ファイルのアップロードが完了しました。\n処理を開始します…"
   );
 
   fs.renameSync(
-    `public/uploads/${req.file.originalname}`,
+    `public/uploads/${file.name}`,
     `public/uploads/working.zip`,
     (err) => {
       if (err) throw err;
@@ -75,5 +85,5 @@ app.post("/", upload.single("file"), function (req, res) {
 });
 
 app.listen(port, function () {
-  console.log(`Example app listening on port ${port}!`);
+  console.log(`The app listening on port ${port}!`);
 });
