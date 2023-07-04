@@ -16,3 +16,6 @@ parseString(xml, function (err, result) {
     console.log(xml);
 });
 ```
+
+# 消さなきゃいけないxmlタグ
+https://prtimes.jp/main/html/rd/p/000000063.000098839.html
