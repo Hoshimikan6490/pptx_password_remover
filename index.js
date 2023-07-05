@@ -113,5 +113,5 @@ app.post("/", async function (req, res) {
 });
 
 app.listen(port, function () {
-  console.log(`The app listening on port ${port}!`);
+  console.log(`起動しました！　http://localhost:${port} をご覧ください!`);
 });
