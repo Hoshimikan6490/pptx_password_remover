@@ -23,22 +23,26 @@
     }
 
     header {
+        background-color: rgb(240, 240, 240);
         position: fixed;
-        top: 0;
-        left: auto;
-        background: rgba(255, 255, 255);
-        width: 98%;
+        z-index: 100;
+        width: 100%;
         height: 60px;
-        border: 3px solid #333333;
-        margin: auto;
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid #aaaaaa;
     }
 
-    font.title {
-        position: fixed;
-        top: 0;
-        left: 70px;
-        font-size: 40px;
-        margin: 15px;
+    a.title {
+        font-size: 3vw;
+        font-weight: bold;
+        line-height: 1;
+        color: #333;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 2vw;
     }
 
     li {
@@ -125,8 +129,7 @@
     }
 
     body {
-        display: flex;
-        flex-flow: column;
+        margin: 0px;
     }
 
     form {
@@ -136,7 +139,7 @@
 
 <body>
     <header>
-        <font face="UD デジタル 教科書体 N-B" class="title">PPTX password remover</font>
+        <a class="title">PPTX password remover</font>
     </header>
 
     <main>
