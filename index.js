@@ -3,6 +3,8 @@ const path = require("path");
 const fileUpload = require("express-fileupload");
 const fs = require("fs");
 const AdmZip = require("adm-zip");
+const util = require("util");
+const wait = util.promisify(setTimeout);
 
 const app = express();
 const port = 8000;
@@ -41,7 +43,7 @@ function remove_p_modifyVerifier(xml) {
   }
 }
 
-app.post("/", function (req, res) {
+app.post("/", async function (req, res) {
   if (!req.files || Object.keys(req.files).length === 0) {
     res.status(400).send("No files were uploaded.");
     return;
@@ -56,11 +58,7 @@ app.post("/", function (req, res) {
     }
   });
 
-  res.send(
-    file.name +
-      "ファイルのアップロードが完了しました。\n処理を開始します…"
-  );
-
+  await wait(1000);
   fs.renameSync(
     `public/uploads/${file.name}`,
     `public/uploads/working.zip`,
@@ -69,8 +67,8 @@ app.post("/", function (req, res) {
     }
   );
 
-  const zip = new AdmZip(path.join(__dirname, `public/uploads/working.zip`));
-  zip.extractAllTo(`public/uploads/editing`, true);
+  const unzip = new AdmZip(path.join(__dirname, `public/uploads/working.zip`));
+  unzip.extractAllTo(`public/uploads/editing`, true);
 
   let xmlString = fs.readFileSync(
     "public/uploads/editing/ppt/presentation.xml",
@@ -82,6 +80,26 @@ app.post("/", function (req, res) {
   fs.writeFileSync(`public/uploads/editing/ppt/presentation.xml`, newXmlString);
 
   fs.unlinkSync("public/uploads/working.zip");
+
+  const zip = new AdmZip();
+  // フォルダを追加
+  zip.addLocalFolder("public/uploads/editing");
+
+  // zipファイル書き出し
+  zip.writeZip("public/uploads/finished.zip");
+
+  fs.renameSync(
+    `public/uploads/finished.zip`,
+    `public/uploads/${file.name}`,
+    (err) => {
+      if (err) throw err;
+    }
+  );
+
+  fs.rmSync("public/uploads/editing", { recursive: true, force: true });
+
+  await wait(5000);
+  res.download(path.join(__dirname, `public/uploads/${file.name}`));
 });
 
 app.listen(port, function () {
