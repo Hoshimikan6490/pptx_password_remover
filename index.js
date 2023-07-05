@@ -98,8 +98,18 @@ app.post("/", async function (req, res) {
 
   fs.rmSync("public/uploads/editing", { recursive: true, force: true });
 
-  await wait(5000);
-  res.download(path.join(__dirname, `public/uploads/${file.name}`));
+  await wait(2000);
+  res.download(
+    path.join(__dirname, `public/uploads/${file.name}`),
+    file.name,
+    function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        fs.unlinkSync(`public/uploads/${file.name}`);
+      }
+    }
+  );
 });
 
 app.listen(port, function () {
