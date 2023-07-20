@@ -1,39 +1,40 @@
-# 言語
+# supporting languages
 - [日本語](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_ja.md)
 - **[English](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_en.md)** ←
 
-# このプログラムについて
-このプログラムは、パワーポイントのファイルである、拡張子が「.pptx」であるファイルにかけられたパスワードを削除します。  
+# About this program
+This programme removes passwords placed on PowerPoint files with the extension ".pptx".  
 
-# 注意事項
-本プログラムを使用すると、PPTXファイル作成者の意図に反してパスワードを削除することができます。この行為は、あまり良い行為とは言えませんので、パスワードを削除したファイルは削除したご本人のみでのご利用をお願いいたします。それを配布するなどの行為はご遠慮ください。  
-また、本プログラムの作成者はこのプログラムを使用した際の損害等について、一切の責任を負いません。ここでいう損害などの例として、PPTXファイル作成者と争いになったり、本プログラム使用後のPPTXファイルが破損していたなどがあげられます。
+# CAUTION
+This programme can be used to delete passwords against the intention of the PPTX file creator. This is not a good practice, so please ensure that the file with the password deleted is used only by the person who deleted it. Please refrain from distributing it or any other action.  
+The author of this programme is not liable for any damage caused by the use of this programme. Examples of damages include disputes with the PPTX file creator or damage to the PPTX file after use of this programme.
 
-# 使い方
-1. このプログラムをダウンロード、またはgitを使ってcloneする。
-2. コピーしたプログラム内のトップのディレクトリ(このファイルがあるフォルダ)で、ターミナルを開く。
-3. 「`npm i`」コマンドを実行する。
-4. 「`npx nodemon index.js`」または、「`node index.js`」コマンドを実行する。
-5. ターミナルにURLが表示されるので、そこにアクセス。
-6. 画面の指示に従って、PPTXファイルを選択し、「GO」を押す。
-7. パスワードが削除されたPPTXファイルがダウンロードされる。
+# How to use
+1. download this program or clone it using git.
+2. open a terminal in the top directory in the programme you copied (the folder with this file).
+3. Run the command `npm i`.
+4. Execute the command `npx nodemon index.js` or `node index.js`. 
+5. the URL will be displayed in the terminal. So, please access that url.
+6. follow the on-screen instructions to select the PPTX file and press 'GO'.
+7. the PPTX file with the password removed will be downloaded.
 
-# 技術的情報
-## 仕様について
-本プログラムの動作は以下の通りである。
-1. expressパッケージでローカル用webサーバーを立ちあげる。
-2. ユーザーからにファイルを選択してもらい、作業用フォルダにコピーする。
-3. 作業用フォルダ内のPPTXファイルの拡張子をzipに変更
-4. zipファイルを解凍
-5. パスワードの情報が含まれる文言を削除
-6. zipファイルとして圧縮
-7. 拡張子をPPTXに変更
-8. ユーザーにダウンロードさせる。
+# Technical information
+## About the action of this program
+The action of the Programme is as follows.
+1. Set up a local web server with the express package.
+2. Ask the user to select a file and copy it to the working folder named "uploads".
+3. Change the extension of PPTX files in the working folder to zip.
+4. Unzip the zip file.
+5. Remove text containing password information.
+6. Compressed as a zip file.
+7. Change extension to PPTX.
+8. Make the user download it.
+9. Remove pptx file in the working folder.
 
-# 使用パッケージと目的
-- adm-zip: zipファイルの圧縮・解凍をするため。
-- express: webサーバーを立ち上げるため。
-- express-fileupload: webサーバーで、ファイルの受け入れをするため。
-- fs: アップロードしてもらったファイルをいじるため。
-- nodemon: web鯖関連で変更があったときに即座に再起動するため。
-- util: バグ対策の「数秒待つ」を実行するため。
+# Packages used and their purpose
+- adm-zip: To compress and decompress zip files.
+- express: To set up a web server.
+- express-fileupload: On the web server, to accept files.
+- fs: To edit with files that have been uploaded.
+- nodemon: To restart immediately when there are changes related to the web server.
+- util: To implement the 'wait a few seconds' bug countermeasure.
