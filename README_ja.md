@@ -1,4 +1,4 @@
-# 言語
+# 対応している言語
 - **[日本語](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_ja.md)** ←
 - [English](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_en.md)
 
