@@ -8,10 +8,6 @@
 </head>
 
 <style>
-    p {
-        font-size: 30px;
-    }
-
     #line {
         position: fixed;
         /* 要素の位置を固定する */
@@ -23,14 +19,14 @@
     }
 
     header {
-        background-color: rgb(240, 240, 240);
         position: fixed;
-        z-index: 100;
-        width: 100%;
+        top: 0;
+        left: 5;
+        background: rgba(255, 255, 255);
+        width: 98%;
         height: 60px;
-        display: flex;
-        align-items: center;
-        border-bottom: 2px solid #aaaaaa;
+        border: 3px solid #333333;
+        margin: auto;
     }
 
     a.title {
@@ -42,15 +38,12 @@
     }
 
     h1 {
+        margin-top: 50px;
         font-size: 2vw;
     }
 
     li {
         font-size: 40px;
-    }
-
-    img {
-        margin: 5px;
     }
 
     .btn {
@@ -125,14 +118,15 @@
 
     main {
         background: #ffffff;
-        margin-top: 70px;
+        margin-top: 90px;
     }
 
     body {
-        margin: 0px;
+        min-height: 100vh;
     }
 
     form {
+        margin: auto;
         text-align: center;
     }
 </style>
