@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "adm-zip": "^0.5.15",
+    "adm-zip": "^0.5.16",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.1",
     "fs": "^0.0.1-security",
