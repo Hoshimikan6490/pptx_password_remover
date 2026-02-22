@@ -1,7 +1,7 @@
 # pptx_password_remover
 
 > [!WARNING]
-> EN: The code of this repository is not mentenanced. You will need to take full responsibility for your action.
+> EN: The code of this repository is not mentenanced. You will need to take full responsibility for your action.  
 > JP: このリポジトリのコードはメンテナンスされていません。コードの実行などは自己責任で行ってください。
 
 # README
