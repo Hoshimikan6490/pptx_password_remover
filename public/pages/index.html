@@ -1,149 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>PPTX password remover</title>
-</head>
+    <title>PPTX/PPSX password remover</title>
+  </head>
 
-<style>
+  <style>
     #line {
-        position: fixed;
-        /* 要素の位置を固定する */
-        bottom: 0;
-        /* 基準の位置を画面の一番下に指定する */
-        left: 0;
-        /* 基準の位置を画面の一番右に指定する */
-        margin: 5px;
+      position: fixed;
+      /* 要素の位置を固定する */
+      bottom: 0;
+      /* 基準の位置を画面の一番下に指定する */
+      left: 0;
+      /* 基準の位置を画面の一番右に指定する */
+      margin: 5px;
     }
 
     header {
-        position: fixed;
-        top: 0;
-        left: 5;
-        background: rgba(255, 255, 255);
-        width: 98%;
-        height: 60px;
-        border: 3px solid #333333;
-        margin: auto;
+      position: fixed;
+      top: 0;
+      left: 5;
+      background: rgba(255, 255, 255);
+      width: 98%;
+      height: 60px;
+      border: 3px solid #333333;
+      margin: auto;
     }
 
     a.title {
-        font-size: 3vw;
-        font-weight: bold;
-        line-height: 1;
-        color: #333;
-        padding: 15px;
+      font-size: 3vw;
+      font-weight: bold;
+      line-height: 1;
+      color: #333;
+      padding: 15px;
     }
 
     h1 {
-        margin-top: 50px;
-        font-size: 2vw;
+      margin-top: 50px;
+      font-size: 2vw;
     }
 
     li {
-        font-size: 40px;
+      font-size: 40px;
     }
 
     .btn {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 130px;
-        height: 20px;
-        margin: 20px;
-        margin-right: 30px;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 130px;
+      height: 20px;
+      margin: 20px;
+      margin-right: 30px;
     }
 
     .btn a {
-        display: block;
-        width: 100%;
-        height: 100%;
-        text-decoration: none;
-        background: #0099FF;
-        text-align: center;
-        color: #FFFFFF;
-        font-size: 20px;
-        font-weight: bold;
-        border-radius: 50px;
-        box-shadow: 5px 5px 0px 0px #DEDEDE;
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-decoration: none;
+      background: #0099ff;
+      text-align: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 50px;
+      box-shadow: 5px 5px 0px 0px #dedede;
     }
 
     .btn a:hover {
-        background: #0099FF;
-        color: #FFFC00;
-        margin-left: 5px;
-        margin-top: 5px;
-        box-shadow: none;
+      background: #0099ff;
+      color: #fffc00;
+      margin-left: 5px;
+      margin-top: 5px;
+      box-shadow: none;
     }
 
     input {
-        width: 300px;
+      width: 300px;
     }
 
     .button_group {
-        display: flex;
-        justify-content: center;
+      display: flex;
+      justify-content: center;
     }
 
     .button_group button {
-        color: aquamarine;
-        background: #FFFC00;
+      color: aquamarine;
+      background: #fffc00;
     }
 
     .button_group input {
-        display: none;
+      display: none;
     }
 
     .button_group a.button {
-        margin-left: 5px;
-        display: inline-block;
-        text-decoration: none;
-        background: #0099FF;
-        text-align: center;
-        color: #FFFFFF;
-        font-size: 20px;
-        font-weight: bold;
-        border-radius: 50px;
-        box-shadow: 5px 5px 0px 0px #DEDEDE;
-        padding: 10px;
+      margin-left: 5px;
+      display: inline-block;
+      text-decoration: none;
+      background: #0099ff;
+      text-align: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 50px;
+      box-shadow: 5px 5px 0px 0px #dedede;
+      padding: 10px;
     }
 
     .button_group a:hover.button {
-        background: #0099FF;
-        color: #FFFC00;
-        box-shadow: none;
+      background: #0099ff;
+      color: #fffc00;
+      box-shadow: none;
     }
 
     main {
-        background: #ffffff;
-        margin-top: 90px;
+      background: #ffffff;
+      margin-top: 90px;
     }
 
     body {
-        min-height: 100vh;
+      min-height: 100vh;
     }
 
     form {
-        margin: auto;
-        text-align: center;
+      margin: auto;
+      text-align: center;
     }
-</style>
+  </style>
 
-<body>
+  <body>
     <header>
-        <a class="title">PPTX password remover</a>
+      <a class="title">PPTX/PPSX password remover</a>
     </header>
 
     <main>
-        <h1>パスワードを削除したいPPTXをアップロード(Upload the PPTX file you want to remove the password from.)</h1>
-        <form action="/" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".pptx">
-            <button type="submit">GO</button>
-        </form>
-        <br />
+      <h1>
+        パスワードを削除したいPPTX/PPSXをアップロード(Upload the PPTX/PPSX file
+        you want to remove the password from.)
+      </h1>
+      <form action="/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pptx,.ppsx" />
+        <button type="submit">GO</button>
+      </form>
+      <br />
     </main>
-</body>
-
+  </body>
 </html>
