@@ -30,24 +30,17 @@ app.get('/', (req, res) =>
 
 // presentation.xmlからp:modifyVerifierを削除する関数
 function remove_p_modifyVerifier(xml) {
-  let i = 0;
-  while (1) {
-    i++;
-    if (xml.substr(i, 1) == 'p') {
-      if (xml.substr(i + 2, 14) == 'modifyVerifier') {
-        var first_hand = xml.substr(0, i - 1);
-
-        for (j = i; i <= 6000; j++) {
-          if (xml.substr(j, 1) == '>') {
-            var latter_hand = xml.slice(j + 1);
-            break;
-          }
-        }
-
-        return first_hand + latter_hand;
-      }
-    }
+  const tagIndex = xml.indexOf('<p:modifyVerifier');
+  if (tagIndex === -1) {
+    return null;
   }
+
+  const tagEndIndex = xml.indexOf('>', tagIndex);
+  if (tagEndIndex === -1) {
+    return null;
+  }
+
+  return `${xml.slice(0, tagIndex)}${xml.slice(tagEndIndex + 1)}`;
 }
 
 // [Content_Types].xml内のPPSX用ContentTypeをPPTX用に変換する関数
@@ -123,6 +116,14 @@ app.post('/api/progress', async function (req, res) {
     // p:modifyVerifierを削除して、presentation.xmlを更新
     const xmlString = await presentationEntry.async('string');
     const newXmlString = remove_p_modifyVerifier(xmlString);
+    if (newXmlString === null) {
+      res
+        .status(400)
+        .send(
+          'Uploaded PowerPoint file does not appear to be password-protected.',
+        );
+      return;
+    }
     zip.file('ppt/presentation.xml', newXmlString);
   }
 
