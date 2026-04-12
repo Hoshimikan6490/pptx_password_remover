@@ -4,164 +4,514 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>PPTX/PPSX password remover</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Noto+Sans+JP:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #f4efe2;
+        --bg-2: #dbe9f2;
+        --ink: #1b2a31;
+        --muted: #4c6570;
+        --card: #fffdf7;
+        --line: #17313f;
+        --accent: #f08a2b;
+        --accent-2: #1f7a8c;
+        --ok: #2f8f46;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Manrope', 'Noto Sans JP', sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 8% 12%, #ffe3b8 0 9%, transparent 10%),
+          radial-gradient(circle at 90% 20%, #b9dce7 0 11%, transparent 12%),
+          linear-gradient(130deg, var(--bg-1), var(--bg-2));
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 18px 20px;
+        border-bottom: 3px solid var(--line);
+        background: rgb(255 252 242 / 88%);
+        backdrop-filter: blur(6px);
+      }
+
+      .site-header h1 {
+        margin: 0;
+        font-size: clamp(1.2rem, 4.5vw, 2rem);
+        font-weight: 900;
+        letter-spacing: 0.02em;
+      }
+
+      main {
+        width: min(1040px, 92vw);
+        margin: 28px auto 40px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .tool-card {
+        background: var(--card);
+        border: 3px solid var(--line);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 8px 8px 0 #a0b6c2;
+      }
+
+      .tool-card h2 {
+        margin: 0 0 12px;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        line-height: 1.35;
+      }
+
+      .upload-zone {
+        width: 100%;
+        min-height: 170px;
+        border: 3px dashed var(--accent-2);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #f4fbff, #ebf7f3);
+        padding: 18px;
+        text-align: center;
+        cursor: pointer;
+        display: grid;
+        place-content: center;
+        gap: 8px;
+        transition:
+          transform 0.15s ease,
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .upload-zone:hover,
+      .upload-zone.is-dragover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+        background: linear-gradient(180deg, #fff5e8, #fefde9);
+      }
+
+      .upload-zone strong {
+        font-size: clamp(1rem, 2.4vw, 1.12rem);
+        font-weight: 800;
+      }
+
+      .upload-zone span {
+        color: var(--muted);
+        font-size: 0.95rem;
+        word-break: break-all;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .submit-row {
+        margin-top: 14px;
+      }
+
+      .submit-button {
+        border: 3px solid var(--line);
+        border-radius: 999px;
+        background: #ffd166;
+        color: #0f2933;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 10px 24px;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 #c8b07c;
+        transition: transform 0.12s ease;
+      }
+
+      .submit-button:hover:not(:disabled) {
+        transform: translate(-1px, -1px);
+      }
+
+      .submit-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .progress-wrap {
+        margin-top: 16px;
+      }
+
+      .progress-wrap progress {
+        width: 100%;
+        height: 20px;
+        border-radius: 999px;
+      }
+
+      .status-text {
+        margin: 8px 0 0;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .status-text.is-complete {
+        color: var(--ok);
+        font-weight: 700;
+      }
+
+      @media (max-width: 640px) {
+        .tool-card {
+          padding: 16px;
+          box-shadow: 5px 5px 0 #a0b6c2;
+        }
+
+        .upload-zone {
+          min-height: 150px;
+        }
+      }
+    </style>
   </head>
 
-  <style>
-    #line {
-      position: fixed;
-      /* 要素の位置を固定する */
-      bottom: 0;
-      /* 基準の位置を画面の一番下に指定する */
-      left: 0;
-      /* 基準の位置を画面の一番右に指定する */
-      margin: 5px;
-    }
-
-    header {
-      position: fixed;
-      top: 0;
-      left: 5;
-      background: rgba(255, 255, 255);
-      width: 98%;
-      height: 60px;
-      border: 3px solid #333333;
-      margin: auto;
-    }
-
-    a.title {
-      font-size: 3vw;
-      font-weight: bold;
-      line-height: 1;
-      color: #333;
-      padding: 15px;
-    }
-
-    h1 {
-      margin-top: 50px;
-      font-size: 2vw;
-    }
-
-    li {
-      font-size: 40px;
-    }
-
-    .btn {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 130px;
-      height: 20px;
-      margin: 20px;
-      margin-right: 30px;
-    }
-
-    .btn a {
-      display: block;
-      width: 100%;
-      height: 100%;
-      text-decoration: none;
-      background: #0099ff;
-      text-align: center;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 50px;
-      box-shadow: 5px 5px 0px 0px #dedede;
-    }
-
-    .btn a:hover {
-      background: #0099ff;
-      color: #fffc00;
-      margin-left: 5px;
-      margin-top: 5px;
-      box-shadow: none;
-    }
-
-    input {
-      width: 300px;
-    }
-
-    .button_group {
-      display: flex;
-      justify-content: center;
-    }
-
-    .button_group button {
-      color: aquamarine;
-      background: #fffc00;
-    }
-
-    .button_group input {
-      display: none;
-    }
-
-    .button_group a.button {
-      margin-left: 5px;
-      display: inline-block;
-      text-decoration: none;
-      background: #0099ff;
-      text-align: center;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 50px;
-      box-shadow: 5px 5px 0px 0px #dedede;
-      padding: 10px;
-    }
-
-    .button_group a:hover.button {
-      background: #0099ff;
-      color: #fffc00;
-      box-shadow: none;
-    }
-
-    main {
-      background: #ffffff;
-      margin-top: 90px;
-    }
-
-    body {
-      min-height: 100vh;
-    }
-
-    form {
-      margin: auto;
-      text-align: center;
-    }
-  </style>
-
   <body>
-    <header>
-      <a class="title">PPTX/PPSX password remover</a>
+    <header class="site-header">
+      <h1>PPTX/PPSX Password Remover</h1>
     </header>
 
     <main>
-      <h1>
-        パスワードを削除したいPPTX/PPSXをアップロード(Upload the PPTX/PPSX file
-        you want to remove the password from.)
-      </h1>
-      <form
-        action="/api/progress?type=removePassword"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <input type="file" name="file" accept=".pptx,.ppsx" />
-        <button type="submit">GO</button>
-      </form>
-      <br />
-      <hr />
-      <h1>
-        PPTXに変換したいPPSXをアップロード(Upload the PPSX file you want to
-        convert to PPTX)
-      </h1>
-      <form
-        action="/api/progress?type=convertToPPTX"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <input type="file" name="file" accept=".ppsx" />
-        <button type="submit">GO</button>
-      </form>
+      <section class="tool-card" aria-labelledby="removePasswordTitle">
+        <h2 id="removePasswordTitle">パスワード削除</h2>
+        <form
+          id="removePasswordForm"
+          action="/api/progress?type=removePassword"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <input
+            id="removePasswordInput"
+            class="file-input"
+            type="file"
+            name="file"
+            accept=".pptx,.ppsx"
+          />
+          <label
+            id="removePasswordDrop"
+            class="upload-zone"
+            for="removePasswordInput"
+          >
+            <strong>クリック or ドラッグ&ドロップ</strong>
+            <span>PPTX / PPSX ファイルを選択</span>
+            <span id="removePasswordFileName">未選択</span>
+          </label>
+          <div class="submit-row">
+            <button
+              id="removePasswordSubmit"
+              class="submit-button"
+              type="submit"
+            >
+              パスワード削除を開始
+            </button>
+          </div>
+          <div class="progress-wrap" aria-live="polite">
+            <progress
+              id="removePasswordProgress"
+              value="0"
+              max="100"
+            ></progress>
+            <p id="removePasswordStatus" class="status-text">待機中</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="tool-card" aria-labelledby="convertTitle">
+        <h2 id="convertTitle">PPSX to PPTX 変換</h2>
+        <form
+          id="convertToPPTXForm"
+          action="/api/progress?type=convertToPPTX"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <input
+            id="convertToPPTXInput"
+            class="file-input"
+            type="file"
+            name="file"
+            accept=".ppsx"
+          />
+          <label
+            id="convertToPPTXDrop"
+            class="upload-zone"
+            for="convertToPPTXInput"
+          >
+            <strong>クリック or ドラッグ&ドロップ</strong>
+            <span>PPSX ファイルを選択</span>
+            <span id="convertToPPTXFileName">未選択</span>
+          </label>
+          <div class="submit-row">
+            <button
+              id="convertToPPTXSubmit"
+              class="submit-button"
+              type="submit"
+            >
+              変換を開始
+            </button>
+          </div>
+          <div class="progress-wrap" aria-live="polite">
+            <progress id="convertToPPTXProgress" value="0" max="100"></progress>
+            <p id="convertToPPTXStatus" class="status-text">待機中</p>
+          </div>
+        </form>
+      </section>
     </main>
+
+    <script>
+      function updateProgress(progressEl, statusEl, value, text, isComplete) {
+        progressEl.value = value;
+        statusEl.textContent = text;
+        statusEl.classList.toggle('is-complete', Boolean(isComplete));
+      }
+
+      function getDownloadFileName(xhr, fallbackName) {
+        const disposition = xhr.getResponseHeader('Content-Disposition');
+        if (!disposition) return fallbackName;
+
+        const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+        if (utf8Match && utf8Match[1]) {
+          return decodeURIComponent(utf8Match[1]);
+        }
+
+        const basicMatch = disposition.match(/filename="?([^";]+)"?/i);
+        if (basicMatch && basicMatch[1]) {
+          return basicMatch[1];
+        }
+
+        return fallbackName;
+      }
+
+      function downloadBlob(blob, fileName) {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+      }
+
+      function setFilesToInput(inputEl, files) {
+        const dt = new DataTransfer();
+        Array.from(files).forEach((file) => dt.items.add(file));
+        inputEl.files = dt.files;
+      }
+
+      function isAcceptableFile(fileName, acceptText) {
+        const accepted = acceptText
+          .split(',')
+          .map((ext) => ext.trim().toLowerCase())
+          .filter(Boolean);
+        return accepted.some((ext) => fileName.toLowerCase().endsWith(ext));
+      }
+
+      function attachUploadTool(config) {
+        const form = document.getElementById(config.formId);
+        const input = document.getElementById(config.inputId);
+        const dropZone = document.getElementById(config.dropId);
+        const progress = document.getElementById(config.progressId);
+        const status = document.getElementById(config.statusId);
+        const fileNameEl = document.getElementById(config.nameId);
+        const submitButton = document.getElementById(config.submitId);
+
+        if (
+          !form ||
+          !input ||
+          !dropZone ||
+          !progress ||
+          !status ||
+          !submitButton
+        ) {
+          return;
+        }
+
+        const refreshFileName = () => {
+          const file = input.files && input.files[0] ? input.files[0] : null;
+          fileNameEl.textContent = file ? file.name : '未選択';
+        };
+
+        input.addEventListener('change', refreshFileName);
+
+        ['dragenter', 'dragover'].forEach((eventName) => {
+          dropZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropZone.classList.add('is-dragover');
+          });
+        });
+
+        ['dragleave', 'drop'].forEach((eventName) => {
+          dropZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('is-dragover');
+          });
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+          const files = event.dataTransfer ? event.dataTransfer.files : null;
+          if (!files || files.length === 0) {
+            return;
+          }
+
+          const pickedFile = files[0];
+          if (!isAcceptableFile(pickedFile.name, input.accept)) {
+            updateProgress(
+              progress,
+              status,
+              0,
+              'このセクションでは対応外の拡張子です',
+              false,
+            );
+            return;
+          }
+
+          setFilesToInput(input, [pickedFile]);
+          refreshFileName();
+          updateProgress(
+            progress,
+            status,
+            0,
+            'ファイルをセットしました',
+            false,
+          );
+        });
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          const selectedFile =
+            input.files && input.files[0] ? input.files[0] : null;
+
+          if (!selectedFile) {
+            updateProgress(
+              progress,
+              status,
+              0,
+              'ファイルを選択してください',
+              false,
+            );
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('file', selectedFile);
+          const xhr = new XMLHttpRequest();
+
+          submitButton.disabled = true;
+          updateProgress(progress, status, 0, 'アップロード開始 0%', false);
+
+          xhr.open(form.method, form.action, true);
+          xhr.responseType = 'blob';
+
+          xhr.upload.onprogress = (e) => {
+            if (!e.lengthComputable) {
+              updateProgress(progress, status, 0, 'アップロード中', false);
+              return;
+            }
+
+            const percent = Math.round((e.loaded / e.total) * 100);
+            updateProgress(
+              progress,
+              status,
+              percent,
+              `アップロード中 ${percent}%`,
+              false,
+            );
+          };
+
+          xhr.onload = () => {
+            submitButton.disabled = false;
+
+            if (xhr.status >= 200 && xhr.status < 300) {
+              updateProgress(
+                progress,
+                status,
+                100,
+                '完了しました。ダウンロードを開始します。',
+                true,
+              );
+              const fallbackName = selectedFile.name;
+              const fileName = getDownloadFileName(xhr, fallbackName);
+              downloadBlob(xhr.response, fileName);
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+              const msg = String(reader.result || '処理に失敗しました');
+              updateProgress(progress, status, 0, `エラー: ${msg}`, false);
+            };
+            reader.onerror = () => {
+              updateProgress(
+                progress,
+                status,
+                0,
+                'エラー: 処理に失敗しました',
+                false,
+              );
+            };
+            reader.readAsText(xhr.response);
+          };
+
+          xhr.onerror = () => {
+            submitButton.disabled = false;
+            updateProgress(progress, status, 0, '通信エラー', false);
+          };
+
+          xhr.onloadstart = () => {
+            updateProgress(progress, status, 0, 'アップロード開始', false);
+          };
+
+          xhr.onloadend = () => {
+            if (progress.value === 100) {
+              return;
+            }
+            if (progress.value > 0) {
+              updateProgress(
+                progress,
+                status,
+                progress.value,
+                'サーバー処理中',
+                false,
+              );
+            }
+          };
+
+          xhr.send(formData);
+        });
+      }
+
+      attachUploadTool({
+        formId: 'removePasswordForm',
+        inputId: 'removePasswordInput',
+        dropId: 'removePasswordDrop',
+        progressId: 'removePasswordProgress',
+        statusId: 'removePasswordStatus',
+        nameId: 'removePasswordFileName',
+        submitId: 'removePasswordSubmit',
+      });
+
+      attachUploadTool({
+        formId: 'convertToPPTXForm',
+        inputId: 'convertToPPTXInput',
+        dropId: 'convertToPPTXDrop',
+        progressId: 'convertToPPTXProgress',
+        statusId: 'convertToPPTXStatus',
+        nameId: 'convertToPPTXFileName',
+        submitId: 'convertToPPTXSubmit',
+      });
+    </script>
   </body>
 </html>
