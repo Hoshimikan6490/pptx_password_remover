@@ -59,22 +59,24 @@ app.post('/api/progress', async function (req, res) {
   // どちらかのクエリパラメータは必須
   if (!isRemovePassword && !isConvertToPPTX) {
     res
-      .status(400)
-      .send(
-        'Specify action with query parameter: ?removePassword or ?convertToPPTX',
-      );
+      .status(500)
+      .send('サーバーエラーが発生しました。サーバーのログを確認してください。');
+    console.error(
+      '処理種別が指定されていません。クエリパラメータで type=removePassword または type=convertToPPTX を指定してください。',
+    );
     return;
   }
 
   // 両方同時にリクエストされた場合はエラー
   if (isRemovePassword && isConvertToPPTX) {
-    res.status(400).send('Specify only one action at a time.');
+    res.status(500).send('サーバーエラーが発生しました。サーバーのログを確認してください。');
+    console.error('処理種別は同時に複数指定できません。');
     return;
   }
 
   // ファイルがアップロードされているか確認
   if (!req.files || Object.keys(req.files).length === 0) {
-    res.status(400).send('No files were uploaded.');
+    res.status(400).send('ファイルがアップロードされていません。');
     return;
   }
 
@@ -82,13 +84,13 @@ app.post('/api/progress', async function (req, res) {
   let file = req.files.file;
   const extension = path.extname(file.name).toLowerCase();
   if (extension !== '.pptx' && extension !== '.ppsx') {
-    res.status(400).send('Only .pptx or .ppsx files are supported.');
+    res.status(400).send('.pptx または .ppsx 形式のファイルのみに対応しています。ファイル形式を確認してください。');
     return;
   }
 
   // 変換の場合は、.ppsxファイルであることを確認
   if (isConvertToPPTX && extension !== '.ppsx') {
-    res.status(400).send('convertToPPTX mode only supports .ppsx files.');
+    res.status(400).send('PPSX→PPTX変換は .ppsx 形式のファイルのみ対応しています。ファイル形式を確認してください。');
     return;
   }
 
@@ -109,7 +111,9 @@ app.post('/api/progress', async function (req, res) {
     if (!presentationEntry) {
       res
         .status(400)
-        .send('Invalid PowerPoint file: presentation.xml not found.');
+        .send(
+          'PowerPointファイルのデータが破損しています。presentation.xml が見つかりませんでした。',
+        );
       return;
     }
 
@@ -120,7 +124,7 @@ app.post('/api/progress', async function (req, res) {
       res
         .status(400)
         .send(
-          'Uploaded PowerPoint file does not appear to be password-protected.',
+          'アップロードされたPowerPointはパスワード保護されていない可能性があります。ファイルを確認してください。',
         );
       return;
     }
@@ -134,7 +138,9 @@ app.post('/api/progress', async function (req, res) {
     if (!contentTypesEntry) {
       res
         .status(400)
-        .send('Invalid PowerPoint file: [Content_Types].xml not found.');
+        .send(
+          'PowerPointファイルのデータが破損しています。[Content_Types].xml が見つかりませんでした。',
+        );
       return;
     }
 

@@ -149,9 +149,35 @@
       }
 
       .progress-wrap progress {
+        --progress-fill: var(--accent-2);
         width: 100%;
         height: 20px;
         border-radius: 999px;
+        appearance: none;
+        border: none;
+        overflow: hidden;
+        background: #e6edf0;
+      }
+
+      .progress-wrap progress::-webkit-progress-bar {
+        background: #e6edf0;
+        border-radius: 999px;
+      }
+
+      .progress-wrap progress::-webkit-progress-value {
+        background: var(--progress-fill);
+        border-radius: 999px;
+        transition:
+          width 0.2s ease,
+          background-color 0.2s ease;
+      }
+
+      .progress-wrap progress::-moz-progress-bar {
+        background: var(--progress-fill);
+        border-radius: 999px;
+        transition:
+          width 0.2s ease,
+          background-color 0.2s ease;
       }
 
       .status-text {
@@ -162,6 +188,11 @@
 
       .status-text.is-complete {
         color: var(--ok);
+        font-weight: 700;
+      }
+
+      .status-text.is-error {
+        color: #a2151a;
         font-weight: 700;
       }
 
@@ -270,10 +301,20 @@
     </main>
 
     <script>
-      function updateProgress(progressEl, statusEl, value, text, isComplete) {
-        progressEl.value = value;
+      function updateProgress(progressEl, statusEl, value, text, statusType) {
+        progressEl.value = statusType === 'error' ? 100 : value;
         statusEl.textContent = text;
-        statusEl.classList.toggle('is-complete', Boolean(isComplete));
+        if (statusType === 'error') {
+          progressEl.style.setProperty('--progress-fill', '#a2151a');
+        } else if (statusType === 'complete') {
+          progressEl.style.setProperty('--progress-fill', 'var(--ok)');
+        } else {
+          progressEl.style.setProperty('--progress-fill', 'var(--accent-2)');
+        }
+        progressEl.classList.toggle('is-complete', statusType === 'complete');
+        progressEl.classList.toggle('is-error', statusType === 'error');
+        statusEl.classList.toggle('is-complete', statusType === 'complete');
+        statusEl.classList.toggle('is-error', statusType === 'error');
       }
 
       function getDownloadFileName(xhr, fallbackName) {
@@ -338,6 +379,8 @@
           return;
         }
 
+        let isFinished = false;
+
         const refreshFileName = () => {
           const file = input.files && input.files[0] ? input.files[0] : null;
           fileNameEl.textContent = file ? file.name : '未選択';
@@ -372,7 +415,7 @@
               status,
               0,
               'このセクションでは対応外の拡張子です',
-              false,
+              'error',
             );
             return;
           }
@@ -384,7 +427,7 @@
             status,
             0,
             'ファイルをセットしました',
-            false,
+            'normal',
           );
         });
 
@@ -400,7 +443,7 @@
               status,
               0,
               'ファイルを選択してください',
-              false,
+              'error',
             );
             return;
           }
@@ -408,16 +451,17 @@
           const formData = new FormData();
           formData.append('file', selectedFile);
           const xhr = new XMLHttpRequest();
+          isFinished = false;
 
           submitButton.disabled = true;
-          updateProgress(progress, status, 0, 'アップロード開始 0%', false);
+          updateProgress(progress, status, 0, 'アップロード開始 0%', 'normal');
 
           xhr.open(form.method, form.action, true);
           xhr.responseType = 'blob';
 
           xhr.upload.onprogress = (e) => {
             if (!e.lengthComputable) {
-              updateProgress(progress, status, 0, 'アップロード中', false);
+              updateProgress(progress, status, 0, 'アップロード中', 'normal');
               return;
             }
 
@@ -427,7 +471,7 @@
               status,
               percent,
               `アップロード中 ${percent}%`,
-              false,
+              'normal',
             );
           };
 
@@ -435,12 +479,13 @@
             submitButton.disabled = false;
 
             if (xhr.status >= 200 && xhr.status < 300) {
+              isFinished = true;
               updateProgress(
                 progress,
                 status,
                 100,
                 '完了しました。ダウンロードを開始します。',
-                true,
+                'complete',
               );
               const fallbackName = selectedFile.name;
               const fileName = getDownloadFileName(xhr, fallbackName);
@@ -450,32 +495,48 @@
 
             const reader = new FileReader();
             reader.onload = () => {
+              isFinished = true;
               const msg = String(reader.result || '処理に失敗しました');
-              updateProgress(progress, status, 0, `エラー: ${msg}`, false);
-            };
-            reader.onerror = () => {
               updateProgress(
                 progress,
                 status,
                 0,
-                'エラー: 処理に失敗しました',
-                false,
+                `POSTエラー(${xhr.status}): ${msg}`,
+                'error',
+              );
+            };
+            reader.onerror = () => {
+              isFinished = true;
+              updateProgress(
+                progress,
+                status,
+                0,
+                `POSTエラー(${xhr.status}): エラー内容を読み取れませんでした`,
+                'error',
               );
             };
             reader.readAsText(xhr.response);
           };
 
           xhr.onerror = () => {
+            isFinished = true;
             submitButton.disabled = false;
-            updateProgress(progress, status, 0, '通信エラー', false);
+            updateProgress(
+              progress,
+              status,
+              0,
+              'POST通信に失敗しました。ネットワークまたはサーバー状態を確認してください。',
+              'error',
+            );
           };
 
           xhr.onloadstart = () => {
-            updateProgress(progress, status, 0, 'アップロード開始', false);
+            updateProgress(progress, status, 0, 'アップロード開始', 'normal');
           };
 
           xhr.onloadend = () => {
-            if (progress.value === 100) {
+            submitButton.disabled = false;
+            if (isFinished || progress.value === 100) {
               return;
             }
             if (progress.value > 0) {
@@ -484,7 +545,7 @@
                 status,
                 progress.value,
                 'サーバー処理中',
-                false,
+                'normal',
               );
             }
           };
