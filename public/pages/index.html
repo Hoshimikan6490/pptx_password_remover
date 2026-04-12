@@ -140,11 +140,28 @@
         パスワードを削除したいPPTX/PPSXをアップロード(Upload the PPTX/PPSX file
         you want to remove the password from.)
       </h1>
-      <form action="/" method="POST" enctype="multipart/form-data">
+      <form
+        action="/api/progress?type=removePassword"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         <input type="file" name="file" accept=".pptx,.ppsx" />
         <button type="submit">GO</button>
       </form>
       <br />
+      <hr />
+      <h1>
+        PPTXに変換したいPPSXをアップロード(Upload the PPSX file you want to
+        convert to PPTX)
+      </h1>
+      <form
+        action="/api/progress?type=convertToPPTX"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <input type="file" name="file" accept=".ppsx" />
+        <button type="submit">GO</button>
+      </form>
     </main>
   </body>
 </html>

@@ -50,8 +50,35 @@ function remove_p_modifyVerifier(xml) {
   }
 }
 
+// [Content_Types].xml内のPPSX用ContentTypeをPPTX用に変換する関数
+function convert_slideshow_to_presentation(contentTypesXml) {
+  return contentTypesXml.replace(
+    /application\/vnd\.openxmlformats-officedocument\.presentationml\.slideshow\.main\+xml/g,
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml',
+  );
+}
+
 // POSTリクエストを処理するルート
-app.post('/', async function (req, res) {
+app.post('/api/progress', async function (req, res) {
+  const isRemovePassword = req.query.type === 'removePassword';
+  const isConvertToPPTX = req.query.type === 'convertToPPTX';
+
+  // どちらかのクエリパラメータは必須
+  if (!isRemovePassword && !isConvertToPPTX) {
+    res
+      .status(400)
+      .send(
+        'Specify action with query parameter: ?removePassword or ?convertToPPTX',
+      );
+    return;
+  }
+
+  // 両方同時にリクエストされた場合はエラー
+  if (isRemovePassword && isConvertToPPTX) {
+    res.status(400).send('Specify only one action at a time.');
+    return;
+  }
+
   // ファイルがアップロードされているか確認
   if (!req.files || Object.keys(req.files).length === 0) {
     res.status(400).send('No files were uploaded.');
@@ -62,7 +89,13 @@ app.post('/', async function (req, res) {
   let file = req.files.file;
   const extension = path.extname(file.name).toLowerCase();
   if (extension !== '.pptx' && extension !== '.ppsx') {
-    res.status(400).send('Only .pptx and .ppsx files are supported.');
+    res.status(400).send('Only .pptx or .ppsx files are supported.');
+    return;
+  }
+
+  // 変換の場合は、.ppsxファイルであることを確認
+  if (isConvertToPPTX && extension !== '.ppsx') {
+    res.status(400).send('convertToPPTX mode only supports .ppsx files.');
     return;
   }
 
@@ -76,19 +109,39 @@ app.post('/', async function (req, res) {
     checkCRC32: false,
   });
 
-  // presentation.xmlを取得
-  const presentationEntry = zip.file('ppt/presentation.xml');
-  if (!presentationEntry) {
-    res
-      .status(400)
-      .send('Invalid PowerPoint file: presentation.xml not found.');
-    return;
+  // パスワード削除の場合
+  if (isRemovePassword) {
+    // presentation.xmlを取得
+    const presentationEntry = zip.file('ppt/presentation.xml');
+    if (!presentationEntry) {
+      res
+        .status(400)
+        .send('Invalid PowerPoint file: presentation.xml not found.');
+      return;
+    }
+
+    // p:modifyVerifierを削除して、presentation.xmlを更新
+    const xmlString = await presentationEntry.async('string');
+    const newXmlString = remove_p_modifyVerifier(xmlString);
+    zip.file('ppt/presentation.xml', newXmlString);
   }
 
-  // p:modifyVerifierを削除して、presentation.xmlを更新
-  const xmlString = await presentationEntry.async('string');
-  const newXmlString = remove_p_modifyVerifier(xmlString);
-  zip.file('ppt/presentation.xml', newXmlString);
+  // PPSXをPPTXに変換する場合
+  if (isConvertToPPTX) {
+    // [Content_Types].xmlを取得
+    const contentTypesEntry = zip.file('[Content_Types].xml');
+    if (!contentTypesEntry) {
+      res
+        .status(400)
+        .send('Invalid PowerPoint file: [Content_Types].xml not found.');
+      return;
+    }
+
+    // PPSX用ContentTypeをPPTX用に変換して、[Content_Types].xmlを更新
+    const contentTypesXml = await contentTypesEntry.async('string');
+    const convertedXml = convert_slideshow_to_presentation(contentTypesXml);
+    zip.file('[Content_Types].xml', convertedXml);
+  }
 
   // 修正されたPowerPointファイルを再構築して保存
   const rebuiltBuffer = await zip.generateAsync({
@@ -99,7 +152,9 @@ app.post('/', async function (req, res) {
   await fsp.writeFile(uploadPath, rebuiltBuffer);
 
   // クライアントに修正されたPowerPointファイルをダウンロードさせる
-  const fileName = `${path.basename(file.name, extension)}_passwordRemoved${extension}`;
+  const outputExtension = isConvertToPPTX ? '.pptx' : extension;
+  const suffix = isConvertToPPTX ? '_convertedToPPTX' : '_passwordRemoved';
+  const fileName = `${path.basename(file.name, extension)}${suffix}${outputExtension}`;
   res.download(
     path.join(__dirname, `public/uploads/${file.name}`),
     fileName,
