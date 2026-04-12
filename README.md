@@ -1,10 +1,18 @@
 # pptx_password_remover
 
-> [!WARNING]
-> EN: The code of this repository is not mentenanced. You will need to take full responsibility for your action.  
-> JP: このリポジトリのコードはメンテナンスされていません。コードの実行などは自己責任で行ってください。
+PowerPointファイル向けのローカルWebツールです。以下の2機能を提供します。
 
-# README
-このプログラムに関しては、以下のページをご覧ください。(If you want to see document, please acsess that URL.)
-- [日本語版](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_ja.md)
-- [英語版](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_en.md)
+- PPTX/PPSX のパスワードロック解除
+- PPSX から PPTX への変換
+
+## Documentation
+- 日本語: [README_ja.md](./README_ja.md)
+- English: [README_en.md](./README_en.md)
+
+## Quick Start
+1. `npm i`
+2. `node index.js` または `npx nodemon index.js`
+3. ブラウザで `http://localhost:6490` を開く
+
+## License / Disclaimer
+このリポジトリのコードはメンテナンス保証がありません。利用は自己責任でお願いします。

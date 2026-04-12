@@ -1,38 +1,56 @@
 # 対応している言語
-- **[日本語](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_ja.md)** ←
-- [English](https://github.com/Hoshimikan6490/pptx_password_remover/blob/master/README_en.md)
+- **[日本語](./README_ja.md)** ←
+- [English](./README_en.md)
 
 # このプログラムについて
-このプログラムは、パワーポイントのファイルである、拡張子が「.pptx」「.ppsx」であるファイルにかけられたパスワードを削除します。  
+このツールは、PowerPointファイルに対して以下の処理をローカル環境で行います。
+
+- PPTX/PPSX のパスワードロック解除
+- PPSX を PPTX に変換
 
 # 注意事項
-本プログラムを使用すると、PPTXファイル作成者の意図に反してパスワードを削除することができます。この行為は、あまり良い行為とは言えませんので、パスワードを削除したファイルは削除したご本人のみでのご利用をお願いいたします。それを配布するなどの行為はご遠慮ください。  
-また、本プログラムの作成者はこのプログラムを使用した際の損害等について、一切の責任を負いません。ここでいう損害などの例として、PPTXファイル作成者と争いになったり、本プログラム使用後のPPTXファイルが破損していたなどがあげられます。
+パスワード解除は、作成者の意図に反する利用となる可能性があります。対象ファイルは、権利と利用範囲を確認したうえで、自己責任で扱ってください。  
+本プログラムの利用によって生じた損害について、作成者は責任を負いません。
 
 # 使い方
-1. このプログラムをダウンロード、またはgitを使ってcloneする。
-2. コピーしたプログラム内のトップのディレクトリ(このファイルがあるフォルダ)で、ターミナルを開く。
-3. 「`npm i`」コマンドを実行する。
-4. 「`npx nodemon index.js`」または、「`node index.js`」コマンドを実行する。
-5. ターミナルにURLが表示されるので、そこにアクセス。
-6. 画面の指示に従って、PPTX/PPSXファイルを選択し、「GO」を押す。
-7. パスワードが削除されたPPTX/PPSXファイルがダウンロードされる。
+1. このリポジトリを clone するか、ダウンロードする。
+2. プロジェクト直下でターミナルを開く。
+3. `npm i` を実行する。
+4. `node index.js` または `npx nodemon index.js` を実行する。
+5. 表示されたURL（通常は http://localhost:6490）にアクセスする。
+6. 以下のどちらかを選ぶ。
+	- パスワード削除: 「パスワードを削除したいPPTX/PPSX」を選択して GO を押す。
+	- PPSX→PPTX変換: 「PPTXに変換したいPPSX」を選択して GO を押す。
+7. 処理後のファイルがダウンロードされる。
 
-# 技術的情報
-## 仕様について
-本プログラムの動作は以下の通りである。
-1. expressパッケージでローカル用webサーバーを立ちあげる。
-2. ユーザーからにファイルを選択してもらい、作業用フォルダにコピーする。
-3. 作業用フォルダ内のPPTX/PPSXファイルの拡張子をzipに変更
-4. zipファイルを解凍
-5. パスワードの情報が含まれる文言を削除
-6. zipファイルとして圧縮
-7. 拡張子をPPTX/PPSXに変更
-8. ユーザーにダウンロードさせる。
-9. 作業用フォルダからPPTX/PPSXファイルを削除する。
+# API 仕様
+画面からは以下のPOSTが送信されます。
 
-# 使用パッケージと目的
-- jszip: zipファイルを読み込み、presentation.xmlを更新して再生成するため。
-- express: webサーバーを立ち上げるため。
-- express-fileupload: webサーバーで、ファイルの受け入れをするため。
-- nodemon: web鯖関連で変更があったときに即座に再起動するため。
+- パスワード解除: `/api/progress?type=removePassword`
+- PPSX→PPTX変換: `/api/progress?type=convertToPPTX`
+
+フォームデータ:
+
+- `file` (必須): `.pptx` または `.ppsx`
+- ただし `convertToPPTX` は `.ppsx` のみ受け付け
+
+# エラー仕様（主なもの）
+- `No files were uploaded.`
+- `Only .pptx or .ppsx files are supported.`
+- `convertToPPTX mode only supports .ppsx files.`
+- `Uploaded PowerPoint file does not appear to be password-protected.`
+	- パスワード解除モードで `p:modifyVerifier` タグが存在しない場合
+
+# 技術的な処理概要
+1. `express` でローカルWebサーバーを起動
+2. アップロードされたファイルを一時保存
+3. `jszip` でPowerPoint内部XMLを読み込む
+4. 処理モードごとにXMLを書き換える
+5. ファイルを再生成してダウンロードさせる
+6. デバッグモードが無効なら一時ファイルを削除
+
+# 使用パッケージ
+- `express`
+- `express-fileupload`
+- `jszip`
+- `nodemon` (開発時)
