@@ -99,9 +99,10 @@ app.post('/', async function (req, res) {
   await fsp.writeFile(uploadPath, rebuiltBuffer);
 
   // クライアントに修正されたPowerPointファイルをダウンロードさせる
+  const fileName = `${path.basename(file.name, extension)}_passwordRemoved${extension}`;
   res.download(
     path.join(__dirname, `public/uploads/${file.name}`),
-    file.name,
+    fileName,
     function (err) {
       if (err) {
         console.log(err);
