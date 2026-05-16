@@ -437,7 +437,7 @@
 					const strong = dropZone.querySelector('strong');
 					const descSpan = dropZone.querySelector('span:not([id])');
 					if (file) {
-						if (strong) strong.textContent = 'アップロード済み';
+						if (strong) strong.textContent = 'アップロード待機中';
 						if (fileNameEl) fileNameEl.textContent = file.name;
 						if (descSpan) descSpan.textContent = '';
 
@@ -526,7 +526,7 @@
 					isFinished = false;
 
 					submitButton.disabled = true;
-					updateProgress(progress, status, 0, 'アップロード開始 0%', 'normal');
+					updateProgress(progress, status, 0, 'アップロード中', 'normal');
 
 					xhr.open(form.method, form.action, true);
 					xhr.responseType = 'blob';
@@ -538,11 +538,32 @@
 						}
 
 						const percent = Math.round((e.loaded / e.total) * 100);
+						if (percent >= 100) {
+							updateProgress(
+								progress,
+								status,
+								100,
+								'アップロード完了。処理しています。',
+								'normal',
+							);
+							return;
+						}
+
 						updateProgress(
 							progress,
 							status,
 							percent,
 							`アップロード中 ${percent}%`,
+							'normal',
+						);
+					};
+
+					xhr.upload.onload = () => {
+						updateProgress(
+							progress,
+							status,
+							100,
+							'アップロード完了。処理しています。',
 							'normal',
 						);
 					};
@@ -556,7 +577,7 @@
 								progress,
 								status,
 								100,
-								'完了しました。ダウンロードを開始します。',
+								'処理完了。ダウンロードしています。',
 								'complete',
 							);
 							const fallbackName = selectedFile.name;
